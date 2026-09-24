@@ -1,0 +1,10 @@
+{
+  "name": "devdocs-rag-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "description": "UI deferred until backend, vector store, and Postman/console testing are finalized.",
+  "scripts": {
+    "dev": "echo UI not implemented yet",
+    "build": "echo UI not implemented yet"
+  }
+}

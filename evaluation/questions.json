@@ -1,0 +1,72 @@
+[
+  {
+    "id": "fastapi-depends",
+    "question": "How do I use Depends in FastAPI?",
+    "expected_technology": "fastapi",
+    "expected_source_contains": "dependencies",
+    "expected_section_keywords": ["Depends", "dependency"]
+  },
+  {
+    "id": "fastapi-jwt",
+    "question": "How does OAuth2PasswordBearer work with JWT in FastAPI?",
+    "expected_technology": "fastapi",
+    "expected_source_contains": "security-jwt",
+    "expected_section_keywords": ["OAuth2PasswordBearer", "JWT", "Bearer"]
+  },
+  {
+    "id": "fastapi-middleware",
+    "question": "How do I add HTTP middleware in FastAPI?",
+    "expected_technology": "fastapi",
+    "expected_source_contains": "middleware",
+    "expected_section_keywords": ["middleware", "add_middleware"]
+  },
+  {
+    "id": "fastapi-background",
+    "question": "How do I run background tasks after a response in FastAPI?",
+    "expected_technology": "fastapi",
+    "expected_source_contains": "background-tasks",
+    "expected_section_keywords": ["BackgroundTasks"]
+  },
+  {
+    "id": "fastapi-path",
+    "question": "How do path parameters work in FastAPI?",
+    "expected_technology": "fastapi",
+    "expected_source_contains": "path-and-query",
+    "expected_section_keywords": ["path parameters", "item_id"]
+  },
+  {
+    "id": "react-usestate",
+    "question": "How do I update state with useState in React?",
+    "expected_technology": "react",
+    "expected_source_contains": "use-state",
+    "expected_section_keywords": ["useState", "setCount"]
+  },
+  {
+    "id": "react-useeffect",
+    "question": "What does the useEffect dependency array control?",
+    "expected_technology": "react",
+    "expected_source_contains": "use-effect",
+    "expected_section_keywords": ["dependency", "useEffect"]
+  },
+  {
+    "id": "react-hooks",
+    "question": "How do I create a custom Hook in React?",
+    "expected_technology": "react",
+    "expected_source_contains": "custom-hooks",
+    "expected_section_keywords": ["custom", "use"]
+  },
+  {
+    "id": "react-middleware",
+    "question": "Does React provide Express-style middleware?",
+    "expected_technology": "react",
+    "expected_source_contains": "middleware-patterns",
+    "expected_section_keywords": ["middleware", "React Router", "fetch"]
+  },
+  {
+    "id": "ambiguous-middleware",
+    "question": "How do I create middleware?",
+    "expected_technology": null,
+    "expected_source_contains": "middleware",
+    "expected_section_keywords": ["middleware"]
+  }
+]
