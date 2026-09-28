@@ -1,10 +1,29 @@
 {
-  "name": "devdocs-rag-frontend",
+  "name": "devdocs-ai-frontend",
   "private": true,
-  "version": "0.0.0",
-  "description": "UI deferred until backend, vector store, and Postman/console testing are finalized.",
+  "version": "0.2.0",
+  "type": "module",
   "scripts": {
-    "dev": "echo UI not implemented yet",
-    "build": "echo UI not implemented yet"
+    "dev": "vite --port 5173 --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --port 4173 --host 127.0.0.1",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "vite": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "autoprefixer": "^10.4.21",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2"
   }
 }

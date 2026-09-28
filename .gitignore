@@ -29,9 +29,10 @@ evaluation/results/*
 .DS_Store
 Thumbs.db
 
-# Frontend (when added later)
+# Frontend
 frontend/node_modules/
 frontend/dist/
+frontend/.env
 
 # Caches
 .pytest_cache/

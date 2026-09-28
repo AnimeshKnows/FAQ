@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void-black: #040406;
+  --color-abyss-surface: #08090b;
+  --color-surface-container-lowest: #07080a;
+  --color-surface-dim: #0c0e13;
+  --color-surface: #121317;
+  --color-surface-container: #181a20;
+  --color-surface-container-high: #23252c;
+  --color-surface-variant: #343538;
+  --color-hairline: rgba(255, 255, 255, 0.08);
+  --color-hairline-focus: rgba(255, 255, 255, 0.22);
+  --color-glow-silver: rgba(255, 255, 255, 0.12);
+  --color-on-surface: #e3e2e6;
+  --color-on-surface-variant: #9ba1a6;
+
+  --font-sans: "Space Grotesk", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "Space Mono", "JetBrains Mono", monospace;
+}
+
+/* Custom Sleek Scrollbars */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #040406;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Architectural Typography & Glows */
+.text-glow-singularity {
+  text-shadow: 0 0 60px rgba(255, 255, 255, 0.6), 0 2px 30px rgba(0, 0, 0, 0.98);
+}
+.text-readable-editorial {
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.95);
+}
+
+/* Singularity Frosted Glass Overlay */
+.glass-singularity {
+  background: radial-gradient(circle at 50% 30%, rgba(10, 12, 18, 0.92) 0%, rgba(4, 5, 8, 0.98) 100%);
+  backdrop-filter: blur(40px) saturate(140%);
+  -webkit-backdrop-filter: blur(40px) saturate(140%);
+}
+
+/* Floating Technical Glass Cards with subtle volumetric border */
+.tunnel-card {
+  background: linear-gradient(135deg, rgba(18, 21, 29, 0.72) 0%, rgba(7, 8, 12, 0.88) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transform-style: preserve-3d;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tunnel-card:hover {
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.25), 0 0 30px rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+}
+
+/* Floating core prompt tag */
+@keyframes floatCore {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-6px) scale(1.02); }
+}
+.animate-float-core {
+  animation: floatCore 3.5s ease-in-out infinite;
+}
+
+/* Scrollytelling Stage Transition wrapper */
+.scrolly-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transform: scale(0.92) translateZ(0);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.55s;
+  will-change: opacity, transform, visibility;
+}
+.scrolly-stage.active-stage {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1) translateZ(0);
+  pointer-events: auto;
+}
+.scrolly-stage.passed-stage {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(1.12) translateZ(0);
+  pointer-events: none;
+}
+
+/* Shimmer effect for telemetry */
+@keyframes shimmerBar {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer-editorial {
+  background: linear-gradient(90deg, rgba(255,255,255,0.02) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.02) 80%);
+  background-size: 200% 100%;
+  animation: shimmerBar 2.2s infinite;
+}
+

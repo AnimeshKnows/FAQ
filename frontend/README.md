@@ -1,5 +1,31 @@
-# DevDocs RAG — Frontend
+# DevDocs AI — Frontend
 
-UI is **deferred** until the backend, vector store, and API testing (Postman / terminal / console) are finalized.
+Singularity / scrollytelling UI (tunnel canvas + HUD + chat overlay), wired to the FastAPI RAG backend.
 
-This folder is a scaffold placeholder only. No React components yet.
+## Run
+
+Backend on `:8000` first, then:
+
+```powershell
+cd D:\FAQ\frontend
+npm install --cache "D:\HF_CACHE\npm"
+copy .env.example .env
+npm run dev
+```
+
+Open http://127.0.0.1:5173
+
+## Env
+
+| Variable | Default |
+|----------|---------|
+| `VITE_API_BASE_URL` | `http://127.0.0.1:8000` |
+
+## Layout
+
+- Scroll journey with 3D tunnel (`TunnelCanvas`)
+- HUD chrome + stages (`HUDChrome`, `ScrollyJourney`)
+- Full-screen glass chat (`ChatOverlay`) → `POST /api/chat`
+- Citation inspector (`CitationDrawer`)
+
+Previous Spline UI is kept at `frontend-legacy-spline/` for reference.

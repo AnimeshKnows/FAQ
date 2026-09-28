@@ -9,7 +9,7 @@ Citation-aware Retrieval-Augmented Generation over technical documentation (Fast
 - **Vector store:** FAISS (+ BM25 hybrid via `rank-bm25`)
 - **Reranker:** `BAAI/bge-reranker-base`
 - **LLM:** Groq (configurable model)
-- **Frontend:** scaffold only — UI deferred until API testing is done
+- **Frontend:** Vite + React (scrollytelling tunnel UI + glass chat overlay)
 
 ## D: drive layout
 
@@ -76,6 +76,20 @@ curl -X POST http://127.0.0.1:8000/api/chat `
 ```
 
 Restart the API after editing `.env` so settings reload.
+
+## Run frontend
+
+```powershell
+cd D:\FAQ\frontend
+npm install --cache "D:\HF_CACHE\npm"
+copy .env.example .env
+npm run dev
+```
+
+Open `http://127.0.0.1:5173` — scrollytelling landing + glass chat overlay (wired to FastAPI).
+
+See [frontend/README.md](frontend/README.md). Legacy Spline UI: `frontend-legacy-spline/`.
+
 ## Evaluation
 
 ```powershell
@@ -89,6 +103,6 @@ python evaluation\evaluate.py --mode hybrid --rerank --k 5
 
 ## Process notes
 
-- Frontend UI is intentionally empty until backend + index testing via Postman/terminal is complete.
+- Frontend uses Spline as atmosphere; RAG chat + citations are the product.
 - Do not commit until code has been reviewed after testing.
-- Large downloads (pip / HF models) must stay on D:; ask before adding new heavy packages.
+- Large downloads (pip / HF models / npm cache) must stay on D:; ask before adding new heavy packages.
