@@ -1,6 +1,6 @@
 """Chat / RAG query endpoint."""
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
@@ -8,6 +8,7 @@ from app.models.schemas import ChatRequest, ChatResponse, RetrievedChunk
 from app.rag.pipeline import get_pipeline
 from app.rag.reranker import get_reranker
 from app.rag.retriever import get_retriever
+from app.rate_limit import limiter
 
 router = APIRouter(prefix="/api", tags=["chat"])
 
@@ -26,9 +27,10 @@ class RetrieveResponse(BaseModel):
 
 
 @router.post("/chat", response_model=ChatResponse)
-def chat(request: ChatRequest) -> ChatResponse:
+@limiter.limit(get_settings().rate_limit_chat)
+def chat(request: Request, body: ChatRequest) -> ChatResponse:
     try:
-        return get_pipeline().ask(request)
+        return get_pipeline().ask(body)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except RuntimeError as exc:
@@ -38,7 +40,8 @@ def chat(request: ChatRequest) -> ChatResponse:
 
 
 @router.post("/retrieve", response_model=RetrieveResponse)
-def retrieve(request: RetrieveRequest) -> RetrieveResponse:
+@limiter.limit(get_settings().rate_limit_retrieve)
+def retrieve(request: Request, body: RetrieveRequest) -> RetrieveResponse:
     """Retrieval-only endpoint for Postman/console testing without Groq."""
     settings = get_settings()
     retriever = get_retriever()
@@ -47,16 +50,16 @@ def retrieve(request: RetrieveRequest) -> RetrieveResponse:
             status_code=503,
             detail="Vector index not built. Run ingest first.",
         )
-    top_k = request.top_k or settings.retrieve_top_k
+    top_k = body.top_k or settings.retrieve_top_k
     chunks = retriever.hybrid_search(
-        request.question,
+        body.question,
         top_k=top_k,
-        technology=request.technology,
-        mode=request.mode,
+        technology=body.technology,
+        mode=body.mode,
     )
-    if request.rerank:
+    if body.rerank:
         chunks = get_reranker().rerank(
-            request.question,
+            body.question,
             chunks,
             top_k=settings.rerank_top_k,
         )

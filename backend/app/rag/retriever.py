@@ -99,7 +99,34 @@ class Retriever:
     def save(self, directory: Path | None = None) -> None:
         if self._index is None:
             raise RuntimeError("No index to save — call build() first")
-        directory = directory or self.vectorstore_dir
+
+        from app.rag.index_versions import (
+            migrate_legacy_flat_index,
+            prune_versions,
+            utc_version_id,
+            write_current,
+        )
+
+        # One-time migrate of legacy flat files before writing a new version
+        migrate_legacy_flat_index(self.settings)
+
+        if directory is not None:
+            self._write_index_files(directory)
+            return
+
+        version = utc_version_id()
+        version_path = self.settings.vectorstore_versions_dir / version
+        self._write_index_files(version_path)
+        write_current(
+            version,
+            chunk_count=self._index.chunk_count,
+            manifest=self._index.manifest,
+            settings=self.settings,
+        )
+        prune_versions(self.settings)
+
+    def _write_index_files(self, directory: Path) -> None:
+        assert self._index is not None
         directory.mkdir(parents=True, exist_ok=True)
         faiss.write_index(self._index.faiss_index, str(directory / self.FAISS_FILE))
         payload = [c.model_dump() for c in self._index.chunks]
@@ -120,7 +147,17 @@ class Retriever:
         )
 
     def load(self, directory: Path | None = None) -> VectorIndex:
-        directory = directory or self.vectorstore_dir
+        from app.rag.index_versions import migrate_legacy_flat_index, resolve_active_dir
+
+        if directory is None:
+            migrate_legacy_flat_index(self.settings)
+            resolved = resolve_active_dir(self.settings)
+            if resolved is None:
+                raise FileNotFoundError(
+                    f"Vector store not found in {self.vectorstore_dir}. Run ingest first."
+                )
+            directory = resolved
+
         faiss_path = directory / self.FAISS_FILE
         chunks_path = directory / self.CHUNKS_FILE
         bm25_path = directory / self.BM25_FILE

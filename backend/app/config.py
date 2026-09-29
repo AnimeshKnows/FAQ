@@ -1,4 +1,4 @@
-"""Application settings — all heavy paths default to D: drive."""
+"""Application settings — paths default to D: locally; override via env in Docker."""
 
 from __future__ import annotations
 
@@ -39,8 +39,30 @@ class Settings(BaseSettings):
     data_processed_dir: Path = BACKEND_ROOT / "data" / "processed"
     vectorstore_dir: Path = BACKEND_ROOT / "vectorstore"
 
+    # Rate limiting (Redis-backed when available)
+    redis_url: str = "redis://127.0.0.1:6379/0"
+    rate_limit_enabled: bool = True
+    rate_limit_chat: str = "20/minute"
+    rate_limit_retrieve: str = "60/minute"
+    rate_limit_ingest: str = "3/hour"
+
+    # Index versioning
+    index_version_keep: int = 5
+
+    @property
+    def vectorstore_versions_dir(self) -> Path:
+        return self.vectorstore_dir / "versions"
+
+    @property
+    def vectorstore_backups_dir(self) -> Path:
+        return self.vectorstore_dir / "backups"
+
+    @property
+    def vectorstore_current_path(self) -> Path:
+        return self.vectorstore_dir / "current.json"
+
     def apply_hf_env(self) -> None:
-        """Force HuggingFace / sentence-transformers caches onto D:."""
+        """Force HuggingFace / sentence-transformers caches onto configured paths."""
         import os
 
         os.environ["HF_HOME"] = self.hf_home

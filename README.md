@@ -92,14 +92,14 @@ See [frontend/README.md](frontend/README.md). Legacy Spline UI: `frontend-legacy
 
 ## Docker (production-ready)
 
-Runs the FastAPI backend and an nginx-served frontend. The UI talks to the API on the **same origin**; nginx proxies `/api` and `/health` to the backend.
+Runs Redis (shared rate limits), FastAPI backend replicas, and an nginx frontend. The UI talks to the API on the **same origin**; nginx proxies `/api` and `/health` to `backend` (Compose DNS round-robins across replicas).
 
 ### Prerequisites
 
 - Docker Desktop / Engine with Compose v2
 - Root `.env` with at least `GROQ_API_KEY` (copy from [`.env.example`](.env.example))
 - Prefer a local index first: `python backend/scripts/ingest.py` (or use the ingest profile below)
-- ~4+ GB RAM for embeddings + reranker; first model download is large (cached in the `hf_cache` volume)
+- ~2–4+ GB RAM **per backend replica** for embeddings + reranker; first model download is large (cached in the `hf_cache` volume)
 
 ### Start
 
@@ -112,15 +112,55 @@ docker compose up --build -d
 ```
 
 - App: http://localhost (or `FRONTEND_PORT`)
-- API direct: http://localhost:8000/health (or `BACKEND_PORT`)
 - Swagger via proxy: http://localhost/docs
+- Backend is **internal only** (no host port) so you can scale replicas safely
 
-### Rebuild the vector index inside Docker
+### Scale backends
 
 ```powershell
+docker compose up -d --scale backend=2
+```
+
+Shared `vectorstore` + `hf_cache` volumes keep retrieval consistent. Redis keeps rate limits consistent across replicas.
+
+Debug API on the host (single instance):
+
+```powershell
+docker compose run --rm -p 8000:8000 backend
+```
+
+### Rate limits (defaults)
+
+| Route | Limit |
+|-------|--------|
+| `POST /api/chat` | 20/minute per IP |
+| `POST /api/retrieve` | 60/minute per IP |
+| `POST /api/documents/ingest` (and activate/backup) | 3/hour per IP |
+
+Override via `RATE_LIMIT_*` and `REDIS_URL` in `.env`. Exceeded requests return **429**.
+
+### Index versions and backups
+
+Ingest writes to `backend/vectorstore/versions/{utc_id}/` and updates `current.json` (keeps last `INDEX_VERSION_KEEP`, default 5). Legacy flat indexes are migrated automatically on first load/save.
+
+```powershell
+# Rebuild index (creates a new version + zip backup)
 docker compose --profile tools run --rm ingest
 docker compose restart backend
+
+# Zip current version
+docker compose --profile tools run --rm backup
+
+# Local CLI
+python backend\scripts\backup_index.py --list
+python backend\scripts\backup_index.py
 ```
+
+HTTP:
+
+- `GET /api/documents/versions`
+- `POST /api/documents/activate` `{ "version": "..." }`
+- `POST /api/documents/backup` `{ "version": null }`
 
 ### Useful commands
 

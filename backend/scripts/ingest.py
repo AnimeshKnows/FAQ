@@ -60,6 +60,11 @@ def main() -> int:
     retriever.build(chunks, embedder=embedder)
     retriever.save()
     print(f"Saved vector store to {settings.vectorstore_dir}")
+    from app.rag.index_versions import read_current  # noqa: E402
+
+    current = read_current(settings)
+    if current:
+        print(f"Active version: {current.get('version')}")
     print(json.dumps(retriever.get_manifest(), indent=2))
 
     # Smoke-test dense retrieval
