@@ -37,5 +37,3 @@ Frontend image is multi-stage: Vite build → nginx with `/api` and `/health` pr
 - HUD chrome + stages (`HUDChrome`, `ScrollyJourney`)
 - Full-screen glass chat (`ChatOverlay`) → `POST /api/chat`
 - Citation inspector (`CitationDrawer`)
-
-Previous Spline UI is kept at `frontend-legacy-spline/` for reference.

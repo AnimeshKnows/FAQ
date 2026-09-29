@@ -13,14 +13,30 @@ venv/
 .env
 
 # Vector store & processed data (regenerable)
-backend/vectorstore/*
+backend/vectorstore/**
 !backend/vectorstore/.gitkeep
-backend/data/processed/*
+backend/data/processed/**
 !backend/data/processed/.gitkeep
 
-# Evaluation outputs
-evaluation/results/*
+# Evaluation outputs & ephemeral reports (never commit)
+evaluation/results/**
 !evaluation/results/.gitkeep
+evaluation/prod_test_report.md
+**/prod_test_report.md
+evaluation/**/*.zip
+
+# Legacy Spline / unused scene assets (TunnelCanvas UI only)
+*.splinecode
+scene.splinecode
+scene-clean.splinecode
+frontend-legacy-spline/
+
+# Local / generated frontend junk
+frontend/metadata.json
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
 
 # IDE / OS
 .idea/
@@ -29,13 +45,9 @@ evaluation/results/*
 .DS_Store
 Thumbs.db
 
-# Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/.env
-
-# Caches
+# Caches & logs
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 *.log
+npm-debug.log*

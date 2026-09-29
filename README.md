@@ -88,7 +88,7 @@ npm run dev
 
 Open `http://127.0.0.1:5173` — scrollytelling landing + glass chat overlay (wired to FastAPI).
 
-See [frontend/README.md](frontend/README.md). Legacy Spline UI: `frontend-legacy-spline/`.
+See [frontend/README.md](frontend/README.md).
 
 ## Docker (production-ready)
 
@@ -185,6 +185,6 @@ python evaluation\evaluate.py --mode hybrid --rerank --k 5
 
 ## Process notes
 
-- Frontend uses Spline as atmosphere; RAG chat + citations are the product.
-- Do not commit until code has been reviewed after testing.
+- RAG chat + citations are the product; the landing UI is the singularity tunnel (no Spline dependency).
 - Large downloads (pip / HF models / npm cache) must stay on D:; ask before adding new heavy packages.
+- Do not commit secrets (`.env`), vector indexes, eval result dumps, or `*.splinecode` scene files.
