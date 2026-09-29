@@ -498,5 +498,29 @@ export const BENCHMARK_QUERIES: BenchmarkQuery[] = [
     tag: 'React',
     description: 'Hook composition, state encapsulation & purity',
     tech: 'react'
+  },
+  {
+    id: 'bm-7',
+    ref: 'REF.07',
+    prompt: 'How do Django models and the ORM define and query tables?',
+    tag: 'Django',
+    description: 'Models, migrations, filter/get, relationships',
+    tech: 'django'
+  },
+  {
+    id: 'bm-8',
+    ref: 'REF.08',
+    prompt: 'How does Express middleware and routing work?',
+    tag: 'Express',
+    description: 'Routers, next(), request pipeline order',
+    tech: 'express'
+  },
+  {
+    id: 'bm-9',
+    ref: 'REF.09',
+    prompt: 'How do Java Streams filter and map collections?',
+    tag: 'Java',
+    description: 'Collections Framework & Stream pipelines',
+    tech: 'java'
   }
 ];

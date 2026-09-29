@@ -68,5 +68,26 @@
     "expected_technology": null,
     "expected_source_contains": "middleware",
     "expected_section_keywords": ["middleware"]
+  },
+  {
+    "id": "django-orm",
+    "question": "How do Django models and the ORM query the database?",
+    "expected_technology": "django",
+    "expected_source_contains": "models-orm",
+    "expected_section_keywords": ["Model", "objects", "filter"]
+  },
+  {
+    "id": "express-middleware",
+    "question": "How does Express middleware work with next()?",
+    "expected_technology": "express",
+    "expected_source_contains": "routing-middleware",
+    "expected_section_keywords": ["middleware", "next"]
+  },
+  {
+    "id": "java-streams",
+    "question": "How do Java Streams filter and map a list?",
+    "expected_technology": "java",
+    "expected_source_contains": "collections-streams",
+    "expected_section_keywords": ["stream", "filter", "map"]
   }
 ]

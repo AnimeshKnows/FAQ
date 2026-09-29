@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChatMessage, Citation, Technology } from '../types';
-import { chat as chatApi } from '../services/api';
+import { chat as chatApi, listTechnologies } from '../services/api';
 
 interface ChatOverlayProps {
   isOpen: boolean;
@@ -8,6 +8,22 @@ interface ChatOverlayProps {
   initialPrompt?: string;
   initialTech?: Technology;
   onInspectCitation: (citation: Citation) => void;
+}
+
+function formatTechLabel(tech: string): string {
+  const labels: Record<string, string> = {
+    c: 'C',
+    cpp: 'C++',
+    csharp: 'C#',
+    java: 'Java',
+    javascript: 'JavaScript',
+    express: 'Express',
+    rest: 'REST',
+    django: 'Django',
+    fastapi: 'FastAPI',
+    react: 'React',
+  };
+  return labels[tech] || tech.charAt(0).toUpperCase() + tech.slice(1);
 }
 
 export const ChatOverlay: React.FC<ChatOverlayProps> = ({
@@ -20,12 +36,33 @@ export const ChatOverlay: React.FC<ChatOverlayProps> = ({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputVal, setInputVal] = useState('');
   const [selectedTech, setSelectedTech] = useState<Technology>(initialTech);
+  const [availableTechs, setAvailableTechs] = useState<string[]>([]);
   const [explainCode, setExplainCode] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const threadEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // Load technologies from the API when chat opens
+  useEffect(() => {
+    if (!isOpen) return;
+    let cancelled = false;
+    listTechnologies()
+      .then((data) => {
+        if (!cancelled && Array.isArray(data.technologies)) {
+          setAvailableTechs(data.technologies);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAvailableTechs(['fastapi', 'react']);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen]);
 
   // Sync initial prompt if provided
   useEffect(() => {
@@ -431,12 +468,11 @@ export const ChatOverlay: React.FC<ChatOverlayProps> = ({
                   <option value="all" className="bg-[#0b0d12] text-white">
                     All technologies
                   </option>
-                  <option value="fastapi" className="bg-[#0b0d12] text-white">
-                    FastAPI
-                  </option>
-                  <option value="react" className="bg-[#0b0d12] text-white">
-                    React (v19)
-                  </option>
+                  {availableTechs.map((tech) => (
+                    <option key={tech} value={tech} className="bg-[#0b0d12] text-white">
+                      {formatTechLabel(tech)}
+                    </option>
+                  ))}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white/40">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -473,7 +509,10 @@ export const ChatOverlay: React.FC<ChatOverlayProps> = ({
 
         <div className="mt-2 text-center">
           <span className="text-[10px] font-mono uppercase tracking-widest text-white/35">
-            Grounding index calibrated • fastapi 0.115 • react 19.0.0
+            Grounding index calibrated
+            {availableTechs.length > 0
+              ? ` • ${availableTechs.length} technologies`
+              : ''}
           </span>
         </div>
       </footer>

@@ -19,7 +19,17 @@ Open http://127.0.0.1:5173
 
 | Variable | Default |
 |----------|---------|
-| `VITE_API_BASE_URL` | `http://127.0.0.1:8000` |
+| `VITE_API_BASE_URL` | `http://127.0.0.1:8000` (local). Docker build sets `""` so the browser uses same-origin nginx proxy. |
+
+## Docker
+
+From the repo root (see root README):
+
+```powershell
+docker compose up --build -d
+```
+
+Frontend image is multi-stage: Vite build → nginx with `/api` and `/health` proxied to `backend:8000`.
 
 ## Layout
 

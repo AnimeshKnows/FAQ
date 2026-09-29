@@ -1,4 +1,5 @@
-export type Technology = 'all' | 'fastapi' | 'react';
+/** 'all' or any tech folder name under backend/data/raw */
+export type Technology = 'all' | (string & {});
 
 export interface Citation {
   index: number;
@@ -31,7 +32,7 @@ export interface BenchmarkQuery {
   id: string;
   ref: string;
   prompt: string;
-  tag: 'FastAPI' | 'React';
+  tag: string;
   description: string;
   tech: Technology;
 }

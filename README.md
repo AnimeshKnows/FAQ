@@ -90,6 +90,48 @@ Open `http://127.0.0.1:5173` — scrollytelling landing + glass chat overlay (wi
 
 See [frontend/README.md](frontend/README.md). Legacy Spline UI: `frontend-legacy-spline/`.
 
+## Docker (production-ready)
+
+Runs the FastAPI backend and an nginx-served frontend. The UI talks to the API on the **same origin**; nginx proxies `/api` and `/health` to the backend.
+
+### Prerequisites
+
+- Docker Desktop / Engine with Compose v2
+- Root `.env` with at least `GROQ_API_KEY` (copy from [`.env.example`](.env.example))
+- Prefer a local index first: `python backend/scripts/ingest.py` (or use the ingest profile below)
+- ~4+ GB RAM for embeddings + reranker; first model download is large (cached in the `hf_cache` volume)
+
+### Start
+
+```powershell
+cd D:\FAQ
+copy .env.example .env
+# Edit .env and set GROQ_API_KEY=...
+
+docker compose up --build -d
+```
+
+- App: http://localhost (or `FRONTEND_PORT`)
+- API direct: http://localhost:8000/health (or `BACKEND_PORT`)
+- Swagger via proxy: http://localhost/docs
+
+### Rebuild the vector index inside Docker
+
+```powershell
+docker compose --profile tools run --rm ingest
+docker compose restart backend
+```
+
+### Useful commands
+
+```powershell
+docker compose logs -f backend
+docker compose ps
+docker compose down
+```
+
+Volumes: `hf_cache` (HuggingFace models), bind mounts for `backend/vectorstore` and `backend/data/raw`.
+
 ## Evaluation
 
 ```powershell

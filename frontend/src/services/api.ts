@@ -1,8 +1,12 @@
+const envBase = import.meta.env.VITE_API_BASE_URL as string | undefined;
+// undefined → local default; "" (Docker/nginx same-origin) → relative URLs
 const API_BASE =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, "") ||
-  "http://127.0.0.1:8000";
+  envBase === undefined
+    ? "http://127.0.0.1:8000"
+    : String(envBase).replace(/\/$/, "");
 
-export type Technology = "all" | "fastapi" | "react";
+/** 'all' or any tech folder name from GET /api/documents/technologies */
+export type Technology = "all" | (string & {});
 
 export interface ApiCitation {
   index: number;
