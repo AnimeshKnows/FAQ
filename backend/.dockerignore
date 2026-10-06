@@ -10,6 +10,8 @@ __pycache__/
 *.log
 data/processed/*
 !data/processed/.gitkeep
-# Keep vectorstore/.gitkeep; host volume supplies the real index in compose
 vectorstore/*
 !vectorstore/.gitkeep
+# Keep local Windows caches / tests out of the image
+**/tests/
+evaluation/

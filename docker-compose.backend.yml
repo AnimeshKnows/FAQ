@@ -1,10 +1,16 @@
+# Backend-only deploy: Redis + API published on host port.
+# Usage:
+#   copy .env.example .env   # set GROQ_API_KEY, CORS_ORIGINS
+#   docker compose -f docker-compose.backend.yml up --build -d
+#   docker compose -f docker-compose.backend.yml --profile tools run --rm ingest
+
 services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
     command: ["redis-server", "--save", "", "--appendonly", "no"]
     networks:
-      - faq-net
+      - faq-backend
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -17,17 +23,17 @@ services:
       dockerfile: Dockerfile
     image: faq-backend:latest
     restart: unless-stopped
-    # Internal only — scale with: docker compose up --scale backend=2
-    # Debug API on host: docker compose run --rm -p 8000:8000 backend
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
     env_file:
       - .env
     environment:
       APP_NAME: ${APP_NAME:-DevDocs RAG}
       DEBUG: ${DEBUG:-false}
-      GROQ_API_KEY: ${GROQ_API_KEY:-}
-      GROQ_MODEL: ${GROQ_MODEL:-openai/gpt-oss-20b}
       HOST: 0.0.0.0
       PORT: 8000
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODEL: ${GROQ_MODEL:-openai/gpt-oss-20b}
       REQUIRE_GROQ_KEY: ${REQUIRE_GROQ_KEY:-true}
       DOCS_ENABLED: ${DOCS_ENABLED:-false}
       INGEST_ENABLED: ${INGEST_ENABLED:-false}
@@ -65,27 +71,10 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 120s
+      start_period: 180s
     networks:
-      - faq-net
+      - faq-backend
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        VITE_API_BASE_URL: ""
-    image: faq-frontend:latest
-    restart: unless-stopped
-    ports:
-      - "${FRONTEND_PORT:-80}:80"
-    depends_on:
-      backend:
-        condition: service_healthy
-    networks:
-      - faq-net
-
-  # One-shot: docker compose --profile tools run --rm ingest
   ingest:
     profiles: ["tools"]
     image: faq-backend:latest
@@ -110,29 +99,11 @@ services:
       - ./backend/data/raw:/app/data/raw:ro
     entrypoint: ["python", "scripts/ingest.py"]
     networks:
-      - faq-net
-
-  # One-shot: docker compose --profile tools run --rm backup
-  backup:
-    profiles: ["tools"]
-    image: faq-backend:latest
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-    environment:
-      REQUIRE_GROQ_KEY: "false"
-      INDEX_VERSION_KEEP: ${INDEX_VERSION_KEEP:-5}
-    volumes:
-      - ./backend/vectorstore:/app/vectorstore
-    entrypoint: ["python", "scripts/backup_index.py"]
-    networks:
-      - faq-net
+      - faq-backend
 
 volumes:
   hf_cache:
 
 networks:
-  faq-net:
+  faq-backend:
     driver: bridge

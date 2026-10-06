@@ -94,7 +94,17 @@ See [frontend/README.md](frontend/README.md).
 
 Runs Redis (shared rate limits), FastAPI backend replicas, and an nginx frontend. The UI talks to the API on the **same origin**; nginx proxies `/api` and `/health` to `backend` (Compose DNS round-robins across replicas).
 
-### Prerequisites
+### Backend only
+
+```powershell
+docker compose -f docker-compose.backend.yml up --build -d
+docker compose -f docker-compose.backend.yml --profile tools run --rm ingest
+docker compose -f docker-compose.backend.yml restart backend
+```
+
+See [backend/README.md](backend/README.md). Image defaults: `DOCS_ENABLED=false`, `INGEST_ENABLED=false`, `REQUIRE_GROQ_KEY=true`. Set `CORS_ORIGINS` to your frontend origin(s).
+
+### Full stack
 
 - Docker Desktop / Engine with Compose v2
 - Root `.env` with at least `GROQ_API_KEY` (copy from [`.env.example`](.env.example))

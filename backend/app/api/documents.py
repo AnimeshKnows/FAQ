@@ -120,6 +120,11 @@ def status() -> IngestStatus:
 @limiter.limit(get_settings().rate_limit_ingest)
 def ingest(request: Request, body: IngestRequest) -> IngestStatus:
     """Synchronously ingest by default (small curated corpus)."""
+    if not get_settings().ingest_enabled:
+        raise HTTPException(
+            status_code=403,
+            detail="Ingest is disabled on this deployment (INGEST_ENABLED=false).",
+        )
     try:
         return run_ingest(technologies=body.technologies)
     except Exception as exc:  # noqa: BLE001
@@ -129,6 +134,11 @@ def ingest(request: Request, body: IngestRequest) -> IngestStatus:
 @router.get("/raw")
 def list_raw() -> dict:
     settings = get_settings()
+    if not settings.ingest_enabled and not settings.debug:
+        raise HTTPException(
+            status_code=403,
+            detail="Raw corpus listing is disabled on this deployment.",
+        )
     files: list[str] = []
     root: Path = settings.data_raw_dir
     if root.exists():
@@ -146,6 +156,11 @@ def versions() -> dict:
 @router.post("/activate")
 @limiter.limit(get_settings().rate_limit_ingest)
 def activate(request: Request, body: ActivateRequest) -> dict:
+    if not get_settings().ingest_enabled:
+        raise HTTPException(
+            status_code=403,
+            detail="Index activation is disabled on this deployment (INGEST_ENABLED=false).",
+        )
     try:
         payload = activate_version(body.version)
     except FileNotFoundError as exc:
@@ -163,6 +178,11 @@ def activate(request: Request, body: ActivateRequest) -> dict:
 @router.post("/backup")
 @limiter.limit(get_settings().rate_limit_ingest)
 def backup(request: Request, body: BackupRequest | None = None) -> dict:
+    if not get_settings().ingest_enabled:
+        raise HTTPException(
+            status_code=403,
+            detail="Index backup is disabled on this deployment (INGEST_ENABLED=false).",
+        )
     body = body or BackupRequest()
     try:
         path = backup_version(version=body.version)
